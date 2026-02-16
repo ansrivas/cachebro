@@ -48,7 +48,7 @@ The cache persists in a local [Turso](https://turso.tech) (SQLite-compatible) da
 ## Installation
 
 ```bash
-npx cachebro init     # auto-configures Claude Code, Cursor, OpenCode
+npx cachebro init     # auto-configures Claude Code, Cursor, OpenCode, Ampcode
 ```
 
 That's it. Restart your editor and cachebro is active. Agents discover it automatically.

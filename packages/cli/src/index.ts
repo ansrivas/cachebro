@@ -34,7 +34,7 @@ if (!command || command === "serve") {
 
   const home = homedir();
 
-  // mcpServers format (Claude Code, Cursor, Windsurf)
+  // mcpServers format (Claude Code, Cursor, Windsurf, mcpServersEntry)
   const mcpServersEntry = {
     command: "npx",
     args: ["cachebro", "serve"],
@@ -45,6 +45,7 @@ if (!command || command === "serve") {
     type: "local" as const,
     command: ["npx", "cachebro", "serve"],
   };
+
 
   const xdgConfig = process.env.XDG_CONFIG_HOME || join(home, ".config");
 
@@ -66,6 +67,12 @@ if (!command || command === "serve") {
       path: join(xdgConfig, "opencode", "opencode.json"),
       key: "mcp",
       entry: opencodeMcpEntry,
+    },
+      {
+      name: "AmpCode",
+      path: join(xdgConfig, "amp", "settings.json"),
+      key: "amp.mcpServers",
+      entry: mcpServersEntry,
     },
   ];
 
