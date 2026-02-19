@@ -31,6 +31,55 @@ export async function startMcpServer(): Promise<void> {
     version: "0.2.0",
   });
 
+  let shuttingDown = false;
+  const shutdown = async (reason: string, exitCode = 0): Promise<void> => {
+    if (shuttingDown) return;
+    shuttingDown = true;
+
+    try {
+      watcher.close();
+    } catch {}
+
+    try {
+      await cache.close();
+    } catch (error) {
+      console.error(`[cachebro] cleanup error during ${reason}:`, error);
+      exitCode = 1;
+    }
+
+    process.exit(exitCode);
+  };
+
+  const registerSignal = (signal: NodeJS.Signals): void => {
+    process.once(signal, () => {
+      void shutdown(signal);
+    });
+  };
+
+  registerSignal("SIGINT");
+  registerSignal("SIGTERM");
+  registerSignal("SIGHUP");
+
+  process.once("disconnect", () => {
+    void shutdown("disconnect");
+  });
+
+  process.stdin.on("end", () => {
+    void shutdown("stdin-end");
+  });
+
+  process.stdin.on("close", () => {
+    void shutdown("stdin-close");
+  });
+
+  if (!process.stdin.isTTY) {
+    process.stdin.resume();
+  }
+
+  process.once("exit", () => {
+    watcher.close();
+  });
+
   server.tool(
     "read_file",
     `Read a file with caching. Use this tool INSTEAD of the built-in Read tool for reading files.
@@ -136,10 +185,4 @@ Use this to verify cachebro is working and see how many tokens it has saved.`,
 
   const transport = new StdioServerTransport();
   await server.connect(transport);
-
-  process.on("SIGINT", () => {
-    watcher.close();
-    cache.close();
-    process.exit(0);
-  });
 }

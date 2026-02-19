@@ -48,7 +48,7 @@ The cache persists in a local [Turso](https://turso.tech) (SQLite-compatible) da
 ## Installation
 
 ```bash
-npx cachebro init     # auto-configures Claude Code, Cursor, OpenCode, Ampcode
+npx cachebro init     # auto-configures Claude Code, Cursor, OpenCode
 ```
 
 That's it. Restart your editor and cachebro is active. Agents discover it automatically.
@@ -80,6 +80,8 @@ The MCP server exposes 4 tools:
 | `cache_clear` | Reset the cache. |
 
 Agents discover these tools automatically and prefer them over built-in file reads because the tool descriptions advertise token savings.
+
+Lifecycle: when started over stdio (MCP default), `cachebro serve` now exits automatically if the client disconnects or closes stdin, preventing orphan background processes between agent sessions.
 
 ### As a CLI
 
